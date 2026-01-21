@@ -2,11 +2,12 @@ from flask import Flask
 from flask import jsonify
 
 from .sales_app import SalesApp
+from .services import RedisCredentials
 
 
 
 app = Flask(__name__)
-sales_app = SalesApp()
+sales_app = SalesApp(credentials=RedisCredentials())
 
 
 @app.route('/whoami', methods=['GET'])
