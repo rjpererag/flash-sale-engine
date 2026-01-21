@@ -1,5 +1,18 @@
 version: '3.8'
 services:
+
+  flask_app:
+    build:
+      context: src/
+      dockerfile: Dockerfile
+    container_name: flash_sale_api
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
   redis:
     image: redis/redis-stack:latest
     ports:

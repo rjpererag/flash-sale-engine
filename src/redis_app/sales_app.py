@@ -7,6 +7,7 @@ class SalesApp:
                  rate_limit: int = 5
                  ):
 
+        self.credentials = credentials
         self.client = RedisClient(credentials=credentials).client
 
         self.health_checker = HealthChecker(client=self.client, service_name="SalesAPP")

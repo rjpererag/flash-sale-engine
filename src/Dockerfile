@@ -1,0 +1,24 @@
+FROM python:3.13-slim
+
+# FLASK SETTINGS
+ENV APP_HOST="0.0.0.0"
+ENV APP_PORT=8080
+ENV APP_DEBUG=True
+
+# REDIS SETTINGS
+ENV REDIS_HOST="localhost"
+ENV REDIS_PORT=6379
+ENV REDIS_DB=0
+ENV REDIS_MAX_CONNECTIONS=20
+ENV REDIS_DECODE_RESPONSES=True
+
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+EXPOSE 8080
+
+CMD ["python", "app.py"]

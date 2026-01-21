@@ -27,6 +27,15 @@ def get_health():
     except Exception as e:
         return jsonify({"status": f"failed: {str(e)}"}), 500
 
+@app.route('/get-redis-settings', methods=['GET'])
+def get_redis_settings():
+    try:
+        creds = sales_app.credentials
+        return jsonify({"redis_credentials": creds}), 200
+
+    except Exception as e:
+        return jsonify({"status": f"failed: {str(e)}"}), 500
+
 @app.route('/create-stock/<string:product_id>/<int:count>', methods=['POST'])
 def create_stock(product_id: str, count: int) -> tuple:
     try:

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 from decouple import config
 
-from .redis_app.api import app
+from redis_app.api import app
 
 @dataclass
 class AppRunSettings:
@@ -13,3 +13,11 @@ def start_app(settings: AppRunSettings) -> None:
     settings = asdict(settings)
     print("USING SETTINGS: ", settings)
     app.run(**settings)
+
+
+def main():
+    settings = AppRunSettings()
+    start_app(settings=settings)
+
+if __name__ == "__main__":
+    main()
