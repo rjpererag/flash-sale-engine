@@ -1,10 +1,17 @@
-import redis
+from redis import Redis
+
 
 class InventoryManager:
 
-    def __init__(self, host='localhost', port=6379):
-        self.r = redis.Redis(host=host, port=port)
-        self._buy_script = """
+    def __init__(self, client: Redis):
+
+        self.client = client
+        self._buy_script = self.__get_lua_script()
+        self.buy_op = self.client.register_script(script=self._buy_script)
+    
+    @staticmethod
+    def __get_lua_script() -> str:
+        return """
         local stock_key = KEYS[1]
         local current_stock = redis.call('GET', stock_key)
 
@@ -23,17 +30,16 @@ class InventoryManager:
             return 0 -- sold out
         end
         """
-        self.buy_op = self.r.register_script(self._buy_script)
-
+       
 
     def set_stock(self, product_id: str, count: int):
-        self.r.set(f"item:stock:{product_id}", count)
+        self.client.set(f"item:stock:{product_id}", count)
 
     def increase_stock(self, product_id: str, count: int):
-        self.r.incr(name=f"item:stock:{product_id}", amount=count)
+        self.client.incr(name=f"item:stock:{product_id}", amount=count)
 
     def decrease_stock(self, product_id: str, count: int):
-        self.r.decr(name=f"item:stock:{product_id}", amount=count)
+        self.client.decr(name=f"item:stock:{product_id}", amount=count)
 
     def buy_item(self, product_id: str):
         key =  f"item:stock:{product_id}"

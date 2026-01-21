@@ -1,27 +1,26 @@
-import redis
+from redis.exceptions import ConnectionError
+from redis import Redis
 
 class HealthChecker:
 
     def __init__(
             self,
-            host='localhost',
-            port=6379,
+            client: Redis,
             service_name: str = "my-redis-app"
     ):
-
-        self.redis = redis.Redis(host=host, port=port)
+        self.client = client
         self.service_name = service_name
 
     def check(self) -> tuple[dict, int]:
         try:
-            is_active = self.redis.ping()
+            is_active = self.client.ping()
             return {
                 "status": "healthy",
                 "connected": is_active,
                 "service_name": self.service_name,
             }, 200
 
-        except redis.exceptions.ConnectionError:
+        except ConnectionError:
             return {
                 "status": "unhealthy",
                 "connected": False,
@@ -36,4 +35,3 @@ class HealthChecker:
                 "error": f"{str(e)}",
                 "service_name": self.service_name,
             }, 500
-

@@ -1,17 +1,18 @@
-from .health_checker import HealthChecker
-from .inventory_manager import InventoryManager
-from .rate_limiter import RateLimiter
-from .trending_manager import TrendingManager
+from .services import *
 
 class SalesApp:
 
     def __init__(self,
+                 credentials: RedisCredentials,
                  rate_limit: int = 5
                  ):
-        self.inventory_manager = InventoryManager()
-        self.rate_limiter = RateLimiter()
-        self.trending_manager = TrendingManager()
-        self.health_checker = HealthChecker(service_name="SalesAPP")
+
+        self.client = RedisClient(credentials=credentials).client
+
+        self.health_checker = HealthChecker(client=self.client, service_name="SalesAPP")
+        self.inventory_manager = InventoryManager(client=self.client)
+        self.rate_limiter = RateLimiter(client=self.client)
+        self.trending_manager = TrendingManager(client=self.client)
 
         self.rate_limit = rate_limit
 
